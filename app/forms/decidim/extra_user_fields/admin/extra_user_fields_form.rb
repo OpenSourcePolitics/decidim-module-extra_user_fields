@@ -13,6 +13,8 @@ module Decidim
         attribute :gender, Boolean
         attribute :phone_number, Boolean
         attribute :location, Boolean
+        attribute :underage, Boolean
+        attribute :underage_limit, Integer
         # Block ExtraUserFields Attributes
 
         # EndBlock
@@ -25,6 +27,8 @@ module Decidim
           self.gender = model.extra_user_fields.dig("gender", "enabled")
           self.phone_number = model.extra_user_fields.dig("phone_number", "enabled")
           self.location = model.extra_user_fields.dig("location", "enabled")
+          self.underage = model.extra_user_fields.dig("underage", "enabled")
+          self.underage_limit = model.extra_user_fields.dig("underage", 18)
           # Block ExtraUserFields MapModel
 
           # EndBlock

@@ -46,6 +46,8 @@ describe "Extra user fields", type: :system do
       "country" => country,
       "phone_number" => phone_number,
       "location" => location,
+      "underage" => underage,
+      "underage_limit" => underage_limit,
       # EndBlock
     }
   end
@@ -75,6 +77,12 @@ describe "Extra user fields", type: :system do
     { "enabled" => true }
   end
 
+  let(:underage) do
+    { "enabled" => true }
+  end
+
+  let(:underage_limit) { 18 }
+
   # Block ExtraUserFields RspecVar
 
   # EndBlock
@@ -92,6 +100,7 @@ describe "Extra user fields", type: :system do
       expect(page).to have_content("Postal code")
       expect(page).to have_content("Phone Number")
       expect(page).to have_content("Location")
+      expect(page).to have_css("input[type=checkbox]#registration_underage_checkbox", visible: :hidden)
       # Block ExtraUserFields ContainsFieldSpec
 
       # EndBlock
@@ -129,6 +138,7 @@ describe "Extra user fields", type: :system do
       expect(page).not_to have_content("Postal code")
       expect(page).not_to have_content("Phone Number")
       expect(page).not_to have_content("Location")
+      expect(page).not_to have_css("input[type=checkbox]#registration_underage_checkbox", visible: :hidden)
       # Block ExtraUserFields DoesNotContainFieldSpec
 
       # EndBlock

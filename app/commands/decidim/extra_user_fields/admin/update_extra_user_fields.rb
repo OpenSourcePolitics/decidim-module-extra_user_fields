@@ -38,22 +38,24 @@ module Decidim
           )
         end
 
-        # rubocop:disable Style/TrailingCommaInHashLiteral
+        # rubocop:disable Metrics/CyclomaticComplexity
         def extra_user_fields
           {
-            "enabled" => form.enabled.presence || false,
-            "date_of_birth" => { "enabled" => form.date_of_birth.presence || false },
-            "country" => { "enabled" => form.country.presence || false },
-            "postal_code" => { "enabled" => form.postal_code.presence || false },
-            "gender" => { "enabled" => form.gender.presence || false },
-            "phone_number" => { "enabled" => form.phone_number.presence || false },
-            "location" => { "enabled" => form.location.presence || false },
+            "enabled" => form.enabled || false,
+            "date_of_birth" => { "enabled" => form.date_of_birth || false },
+            "country" => { "enabled" => form.country || false },
+            "postal_code" => { "enabled" => form.postal_code || false },
+            "gender" => { "enabled" => form.gender || false },
+            "phone_number" => { "enabled" => form.phone_number || false },
+            "location" => { "enabled" => form.location || false },
+            "underage" => { "enabled" => form.underage || false },
+            "underage_limit" => form.underage_limit || 18
             # Block ExtraUserFields SaveFieldInConfig
 
             # EndBlock
           }
         end
-        # rubocop:enable Style/TrailingCommaInHashLiteral
+        # rubocop:enable Metrics/CyclomaticComplexity
       end
     end
   end

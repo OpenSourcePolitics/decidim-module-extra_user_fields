@@ -21,7 +21,9 @@ module Decidim
         date_of_birth: date_of_birth,
         gender: gender,
         phone_number: phone_number,
-        location: location
+        location: location,
+        underage: underage,
+        statutory_representative_email: statutory_representative_email
       ).with_context(
         current_organization: organization,
         current_user: user
@@ -42,10 +44,28 @@ module Decidim
     let(:about) { "This is a description about me" }
     let(:country) { "Argentina" }
     let(:date_of_birth) { "01/01/2000" }
-    let(:gender) { "Other" }
+    let(:gender) { "other" }
     let(:location) { "Paris" }
     let(:phone_number) { "0123456789" }
     let(:postal_code) { "75001" }
+    let(:underage) { "0" }
+    let(:statutory_representative_email) { nil }
+
+    before do
+      organization.update!(
+        extra_user_fields: {
+          "enabled" => true,
+          "date_of_birth" => { "enabled" => true },
+          "postal_code" => { "enabled" => true },
+          "gender" => { "enabled" => true },
+          "country" => { "enabled" => true },
+          "phone_number" => { "enabled" => true },
+          "location" => { "enabled" => true },
+          "underage" => { "enabled" => true },
+          "underage_limit" => 18
+        }
+      )
+    end
 
     context "with correct data" do
       it "is valid" do

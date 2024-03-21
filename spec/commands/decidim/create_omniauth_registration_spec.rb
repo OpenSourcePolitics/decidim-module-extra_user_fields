@@ -18,6 +18,8 @@ module Decidim
         let(:location) { "Paris" }
         let(:phone_number) { "0123456789" }
         let(:postal_code) { "75001" }
+        let(:underage) { false }
+        let(:statutory_representative_email) { nil }
         let(:extended_data) do
           {
             country: country,
@@ -25,7 +27,9 @@ module Decidim
             gender: gender,
             location: location,
             phone_number: phone_number,
-            postal_code: postal_code
+            postal_code: postal_code,
+            underage: underage,
+            statutory_representative_email: statutory_representative_email
           }
         end
 
@@ -45,7 +49,9 @@ module Decidim
               "date_of_birth" => date_of_birth,
               "gender" => gender,
               "phone_number" => phone_number,
-              "location" => location
+              "location" => location,
+              "underage" => underage,
+              "statutory_representative_email" => statutory_representative_email
             }
           }
         end
@@ -225,6 +231,15 @@ module Decidim
 
               user = User.find_by(email: email)
               expect(user).not_to be_confirmed
+            end
+          end
+
+          context "when the user is underage and tries to duplicate email" do
+            let(:underage) { true }
+            let(:statutory_representative_email) { email }
+
+            it "broadcasts invalid" do
+              expect { command.call }.to broadcast(:invalid)
             end
           end
         end

@@ -16,6 +16,8 @@ module Decidim
         let(:date_of_birth) { true }
         let(:phone_number) { true }
         let(:location) { true }
+        let(:underage) { true }
+        let(:underage_limit) { 18 }
         # Block ExtraUserFields RspecVar
 
         # EndBlock
@@ -30,6 +32,8 @@ module Decidim
             "date_of_birth" => date_of_birth,
             "phone_number" => phone_number,
             "location" => location,
+            "underage" => underage,
+            "underage_limit" => underage_limit,
             # Block ExtraUserFields ExtraUserFields
 
             # EndBlock
@@ -82,6 +86,8 @@ module Decidim
               expect(extra_user_fields).to include("country" => { "enabled" => true })
               expect(extra_user_fields).to include("phone_number" => { "enabled" => true })
               expect(extra_user_fields).to include("location" => { "enabled" => true })
+              expect(extra_user_fields).to include("underage" => { "enabled" => true })
+              expect(extra_user_fields).to include("underage_limit" => 18)
               # Block ExtraUserFields InclusionSpec
 
               # EndBlock

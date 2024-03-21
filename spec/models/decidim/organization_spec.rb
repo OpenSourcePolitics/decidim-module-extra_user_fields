@@ -9,13 +9,19 @@ module Decidim
     let(:extra_user_fields) do
       {
         "enabled" => extra_user_field,
-        "date_of_birth" => date_of_birth
+        "date_of_birth" => date_of_birth,
+        "underage" => underage,
+        "underage_limit" => underage_limit
       }
     end
     let(:extra_user_field) { true }
     let(:date_of_birth) do
       { "enabled" => true }
     end
+    let(:underage) do
+      { "enabled" => true }
+    end
+    let(:underage_limit) { 13 }
     let(:omniauth_secrets) do
       {
         facebook: {

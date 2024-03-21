@@ -1,0 +1,8 @@
+<div class="card-section">
+  <div class="row column">
+    <p><%= t(".description") %></p>
+    <%= form.check_box :underage, label: t(".label") %>
+    <%= form.select :underage_limit, (15..21).to_a, selected: current_organization.extra_user_fields[:underage_limit] || 18, label: t(".limit") %>
+
+  </div>
+</div>

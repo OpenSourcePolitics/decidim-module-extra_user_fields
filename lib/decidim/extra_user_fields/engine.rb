@@ -14,9 +14,7 @@ module Decidim
       DEFAULT_GENDER_OPTIONS = [:male, :female, :other].freeze
 
       routes do
-        # Add engine routes here
-        # resources :extra_user_fields
-        # root to: "extra_user_fields#index"
+        get "underage_limit", to: "extra_user_fields#retrieve_underage_limit", as: :retrieve_underage_limit
       end
 
       initializer "decidim_extra_user_fields.registration_additions" do
@@ -52,6 +50,12 @@ module Decidim
           Decidim::FormBuilder.class_eval do
             include Decidim::ExtraUserFields::FormBuilderMethods
           end
+        end
+      end
+
+      initializer "decidim_extra_user_fields.mount_routes" do
+        Decidim::Core::Engine.routes do
+          mount Decidim::ExtraUserFields::Engine, at: "/extra_user_fields", as: "decidim_extra_user_fields_engine"
         end
       end
     end
