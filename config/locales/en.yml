@@ -11,6 +11,12 @@ en:
         postal_code: Postal code
         statutory_representative_email: Representative email
         underage: Underage
+    errors:
+      models:
+        user:
+          attributes:
+            date_of_birth:
+              underage: invalid. If you are underage, you must obtain parental authorization
   decidim:
     admin:
       actions:

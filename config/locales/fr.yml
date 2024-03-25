@@ -11,6 +11,13 @@ fr:
         postal_code: Code postal
         statutory_representative_email: Email du représentant légal
         underage: Mineur
+    errors:
+      models:
+        user:
+          attributes:
+            date_of_birth:
+              underage: invalide. Si vous êtes mineur, vous devez obtenir une autorisation
+                parentale
   decidim:
     admin:
       actions:
