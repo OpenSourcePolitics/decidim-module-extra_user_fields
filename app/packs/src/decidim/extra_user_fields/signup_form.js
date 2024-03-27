@@ -40,19 +40,21 @@ $(document).ready(function() {
         updateUnderageFields();
     }
 
-    $.ajax({
-        url: '/extra_user_fields/underage_limit', // Updated to match the new route
-        type: 'GET',
-        success: function(data) {
-            underageLimit = data.underage_limit;
-            if (dateOfBirthField.length && underageFieldSet.length) {
-                updateUnderageFields();
+    if (underageCheckbox.length) {
+        $.ajax({
+            url: '/extra_user_fields/underage_limit', // Updated to match the new route
+            type: 'GET',
+            success: function (data) {
+                underageLimit = data.underage_limit;
+                if (dateOfBirthField.length && underageFieldSet.length) {
+                    updateUnderageFields();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Failed to fetch underage limit:", textStatus, errorThrown);
             }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error("Failed to fetch underage limit:", textStatus, errorThrown);
-        }
-    });
+        });
+    }
 
     if (dateOfBirthField.length && underageFieldSet.length) {
         dateOfBirthField.on('change', function() {

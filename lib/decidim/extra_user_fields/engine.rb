@@ -13,6 +13,10 @@ module Decidim
 
       DEFAULT_GENDER_OPTIONS = [:male, :female, :other].freeze
 
+      DEFAULT_UNDERAGE_LIMIT = 18
+
+      DEFAULT_UNDERAGE_OPTIONS = (15..21)
+
       routes do
         get "underage_limit", to: "extra_user_fields#retrieve_underage_limit", as: :retrieve_underage_limit
       end

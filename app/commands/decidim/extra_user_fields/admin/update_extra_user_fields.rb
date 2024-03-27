@@ -49,7 +49,7 @@ module Decidim
             "phone_number" => { "enabled" => form.phone_number || false },
             "location" => { "enabled" => form.location || false },
             "underage" => { "enabled" => form.underage || false },
-            "underage_limit" => form.underage_limit || 18
+            "underage_limit" => form.underage_limit || Decidim::ExtraUserFields::Engine::DEFAULT_UNDERAGE_LIMIT
             # Block ExtraUserFields SaveFieldInConfig
 
             # EndBlock

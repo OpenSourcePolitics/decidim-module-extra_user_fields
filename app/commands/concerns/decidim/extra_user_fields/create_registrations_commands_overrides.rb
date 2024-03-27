@@ -62,7 +62,7 @@ module Decidim
       def send_email_to_statutory_representative
         return if form.statutory_representative_email.blank?
 
-        Decidim::ExtraUserFields::StatutoryRepresentativeMailer.inform(@user).deliver_now
+        Decidim::ExtraUserFields::StatutoryRepresentativeMailer.inform(@user).deliver_later
       end
 
       def same_email_representative?

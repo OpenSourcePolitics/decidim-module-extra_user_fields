@@ -99,21 +99,28 @@ module Decidim
         @extra_user_fields_enabled ||= current_organization.extra_user_fields_enabled?
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
-
+      # Method to check if birth date is under the limit
       def birth_date_under_limit
         return unless date_of_birth? && underage?
-
         return if date_of_birth.blank? || underage.blank? || underage_limit.blank?
 
-        age = Time.zone.today.year - date_of_birth.year - (Time.zone.today.yday < date_of_birth.yday ? 1 : 0)
+        age = calculate_age(date_of_birth)
 
-        errors.add(:date_of_birth, :underage) unless (date_of_birth.present? && age < underage_limit && underage_accepted?) || (age > underage_limit && !underage_accepted?)
+        validate_age(age)
+      end
+
+      def calculate_age(date_of_birth)
+        Time.zone.today.year - date_of_birth.year - (Time.zone.today.yday < date_of_birth.yday ? 1 : 0)
+      end
+
+      def validate_age(age)
+        errors.add(:date_of_birth, :underage) unless underage_within_limit?(age)
+        underage_within_limit?(age)
+      end
+
+      def underage_within_limit?(age)
         (date_of_birth.present? && age < underage_limit && underage_accepted?) || (age > underage_limit && !underage_accepted?)
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/PerceivedComplexity
 
       def underage_limit
         current_organization.extra_user_fields["underage_limit"]
