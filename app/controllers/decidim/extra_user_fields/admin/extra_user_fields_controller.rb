@@ -37,12 +37,21 @@ module Decidim
 
         def export_users
           enforce_permission_to :read, :officialization
+          ExportParticipantsJob.perform_later(current_organization, current_user, params[:format])
 
-          ExportUsers.call(params[:format], current_user) do
-            on(:ok) do |export_data|
-              send_data export_data.read, type: "text/#{export_data.extension}", filename: export_data.filename("participants")
-            end
-          end
+          flash[:notice] = t("decidim.admin.exports.notice")
+          redirect_to engine_routes.officializations_path
+          #ExportUsers.call(params[:format], current_user) do
+          #  on(:ok) do |export_data|
+          #     send_data export_data.read, type: "text/#{export_data.extension}", filename: export_data.filename("participants")
+          #  end
+          #end
+        end
+
+        private
+
+        def engine_routes
+          Decidim::Admin::Engine.routes.url_helpers
         end
       end
     end
