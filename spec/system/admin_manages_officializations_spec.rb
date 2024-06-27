@@ -24,4 +24,16 @@ describe "Admin manages officializations", type: :system do
 
     expect(page).to have_content("Export")
   end
+
+  context "when clicking on export csv button" do
+    it "redirects to officialization index page and display a flash message" do
+      click_link "Participants"
+      find(".button--title").click
+      find(".exports--format--csv").click
+
+      expect(page).to have_title("Participants")
+      expect(page).to have_content("Export")
+      expect(page).to have_content("Your export is currently in progress. You'll receive an email when it's complete.")
+    end
+  end
 end
