@@ -97,7 +97,7 @@ describe "Account" do
             find("span[aria-hidden=true]", text: "15").click
           end
           click_link_or_button "Select"
-          #fill_in :user_date_of_birth_date, with: "01/01/2000"
+          # fill_in :user_date_of_birth_date, with: "01/01/2000"
           select "Other", from: :user_gender
           select "Argentina", from: :user_country
           fill_in :user_postal_code, with: "00000"
@@ -235,7 +235,7 @@ describe "Account" do
             find("span[aria-hidden=true]", text: "15").click
           end
           click_link_or_button "Select"
-          #fill_in :user_date_of_birth_date, with: "01/01/2000"
+          # fill_in :user_date_of_birth_date, with: "01/01/2000"
           select "Other", from: :user_gender
           select "Argentina", from: :user_country
           fill_in :user_postal_code, with: "00000"
@@ -297,7 +297,7 @@ describe "Account" do
             find("span[aria-hidden=true]", text: "15").click
           end
           click_link_or_button "Select"
-          #fill_in :user_date_of_birth_date, with: "01/01/2000"
+          # fill_in :user_date_of_birth_date, with: "01/01/2000"
           select "Other", from: :user_gender
           select "Argentina", from: :user_country
           fill_in :user_postal_code, with: "00000"

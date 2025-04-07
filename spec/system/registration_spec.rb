@@ -17,7 +17,7 @@ def fill_extra_user_fields
     page.find("span[aria-hidden=true]", text: "15").click
   end
   click_link_or_button "Select"
-  #fill_in :registration_user_date_of_birth, with: "01/01/2000"
+  # fill_in :registration_user_date_of_birth, with: "01/01/2000"
   select "Other", from: :registration_user_gender
   select "Argentina", from: :registration_user_country
   fill_in :registration_user_postal_code, with: "00000"
