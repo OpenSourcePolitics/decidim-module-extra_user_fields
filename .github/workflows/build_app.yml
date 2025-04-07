@@ -41,6 +41,7 @@ jobs:
         with:
           ruby-version: ${{ inputs.ruby_version }}
           bundler-cache: true
+          rubygems: 'latest'
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node_version }}
