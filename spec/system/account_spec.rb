@@ -91,8 +91,13 @@ describe "Account" do
           fill_in :user_name, with: "Nikola Tesla"
           fill_in :user_personal_url, with: "https://example.org"
           fill_in :user_about, with: "A Serbian-American inventor, electrical engineer, mechanical engineer, physicist, and futurist."
-
-          fill_in :user_date_of_birth, with: "01/01/2000"
+          # date_of_birth
+          find(".datepicker__calendar-button").click
+          within "tbody.sc-wc-datepicker" do
+            find("span[aria-hidden=true]", text: "15").click
+          end
+          click_link_or_button "Select"
+          #fill_in :user_date_of_birth_date, with: "01/01/2000"
           select "Other", from: :user_gender
           select "Argentina", from: :user_country
           fill_in :user_postal_code, with: "00000"
@@ -122,7 +127,7 @@ describe "Account" do
 
       context "when updating avatar" do
         it "can update avatar" do
-          dynamically_attach_file(:user_avatar, Decidim::Dev.asset("avatar.jpg"))
+          dynamically_attach_file(:user_avatar, Decidim::Dev.asset("avatar.jpg"), remove_before: true)
 
           within "form.edit_user" do
             find("*[type=submit]").click
@@ -132,7 +137,7 @@ describe "Account" do
         end
 
         it "shows error when image is too big" do
-          find("#user_avatar_button").click
+          find_by_id("user_avatar_button").click
 
           within ".upload-modal" do
             click_on "Remove"
@@ -215,14 +220,22 @@ describe "Account" do
     end
 
     describe "when update password" do
+      let!(:encrypted_password) { user.encrypted_password }
+      let(:new_password) { "decidim1234567890" }
+
       before do
         within "form.edit_user" do
           select "English", from: :user_locale
           fill_in :user_name, with: "Nikola Tesla"
           fill_in :user_personal_url, with: "https://example.org"
           fill_in :user_about, with: "A Serbian-American inventor, electrical engineer, mechanical engineer, physicist, and futurist."
-
-          fill_in :user_date_of_birth, with: "01/01/2000"
+          # date_of_birth
+          find(".datepicker__calendar-button").click
+          within "tbody.sc-wc-datepicker" do
+            find("span[aria-hidden=true]", text: "15").click
+          end
+          click_link_or_button "Select"
+          #fill_in :user_date_of_birth_date, with: "01/01/2000"
           select "Other", from: :user_gender
           select "Argentina", from: :user_country
           fill_in :user_postal_code, with: "00000"
@@ -232,9 +245,6 @@ describe "Account" do
         end
         click_on "Change password"
       end
-
-      let!(:encrypted_password) { user.encrypted_password }
-      let(:new_password) { "decidim1234567890" }
 
       it "toggles old and new password fields" do
         within "form.edit_user" do
@@ -281,8 +291,13 @@ describe "Account" do
           fill_in :user_name, with: "Nikola Tesla"
           fill_in :user_personal_url, with: "https://example.org"
           fill_in :user_about, with: "A Serbian-American inventor, electrical engineer, mechanical engineer, physicist, and futurist."
-
-          fill_in :user_date_of_birth, with: "01/01/2000"
+          # date_of_birth
+          find(".datepicker__calendar-button").click
+          within "tbody.sc-wc-datepicker" do
+            find("span[aria-hidden=true]", text: "15").click
+          end
+          click_link_or_button "Select"
+          #fill_in :user_date_of_birth_date, with: "01/01/2000"
           select "Other", from: :user_gender
           select "Argentina", from: :user_country
           fill_in :user_postal_code, with: "00000"
@@ -469,7 +484,9 @@ describe "Account" do
           click_on "Delete my account"
         end
 
-        click_on "Yes, I want to delete my account"
+        within "#delete-account-content" do
+          find("input.button", text: "").click
+        end
 
         within_flash_messages do
           expect(page).to have_content("successfully")

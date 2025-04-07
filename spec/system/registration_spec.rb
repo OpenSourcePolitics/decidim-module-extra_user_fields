@@ -11,7 +11,13 @@ def fill_registration_form
 end
 
 def fill_extra_user_fields
-  fill_in :registration_user_date_of_birth, with: "01/01/2000"
+  # date_of_birth
+  find(".datepicker__calendar-button").click
+  within "tbody.sc-wc-datepicker" do
+    page.find("span[aria-hidden=true]", text: "15").click
+  end
+  click_link_or_button "Select"
+  #fill_in :registration_user_date_of_birth, with: "01/01/2000"
   select "Other", from: :registration_user_gender
   select "Argentina", from: :registration_user_country
   fill_in :registration_user_postal_code, with: "00000"
