@@ -104,7 +104,6 @@ describe "Extra user fields" do
     within "form.new_user" do
       find("*[type=submit]").click
     end
-
     expect(page).to have_content("message with a confirmation link has been sent")
   end
 
@@ -118,7 +117,6 @@ describe "Extra user fields" do
       within "form.new_user" do
         find("*[type=submit]").click
       end
-
       expect(page).to have_content("message with a confirmation link has been sent")
     end
   end
@@ -133,7 +131,6 @@ describe "Extra user fields" do
       within "form.new_user" do
         find("*[type=submit]").click
       end
-
       expect(page).to have_no_content("message with a confirmation link has been sent")
       within("label[for='registration_user_phone_number']") do
         expect(page).to have_content("There is an error in this field.")
@@ -172,7 +169,6 @@ describe "Extra user fields" do
       within "form.new_user" do
         find("*[type=submit]").click
       end
-
       expect(page).to have_content("message with a confirmation link has been sent")
     end
   end
