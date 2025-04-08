@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    console.log('inside js file')
     const accountInput = $('#user_date_of_birth_date');
     const registrationInput = $('#registration_user_date_of_birth_date')
     const button = $('.datepicker__calendar-button');

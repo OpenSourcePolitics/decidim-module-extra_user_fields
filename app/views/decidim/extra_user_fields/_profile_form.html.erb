@@ -30,3 +30,4 @@
     <%= f.hidden_field :statutory_representative_email, value: current_user.extended_data["statutory_representative_email"] || "" %>
   <% end %>
 <% end %>
+<%= append_javascript_pack_tag "decidim_extra_user_fields.js" %>
