@@ -10,7 +10,7 @@ gem "decidim", DECIDIM_VERSION
 gem "decidim-extra_user_fields", path: "."
 
 gem "bootsnap", "~> 1.3"
-gem "country_select", "~> 4.0"
+gem "country_select", "~> 9.0"
 gem "puma", ">= 4.3"
 
 group :development, :test do
