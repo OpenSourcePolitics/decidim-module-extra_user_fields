@@ -22,7 +22,7 @@ en:
       actions:
         export: Export
       exports:
-        export_as: Export %{export_format}
+        export_as: Export %{name} as %{export_format}
       extra_user_fields:
         menu:
           title: Manage extra user fields

@@ -11,7 +11,13 @@ def fill_registration_form
 end
 
 def fill_extra_user_fields
-  fill_in :registration_user_date_of_birth, with: "01/01/2000"
+  # date_of_birth
+  find(".datepicker__calendar-button").click
+  within "tbody.sc-wc-datepicker" do
+    page.find("span[aria-hidden=true]", text: "15").click
+  end
+  click_link_or_button "Select"
+  # fill_in :registration_user_date_of_birth, with: "01/01/2000"
   select "Other", from: :registration_user_gender
   select "Argentina", from: :registration_user_country
   fill_in :registration_user_postal_code, with: "00000"
@@ -104,7 +110,6 @@ describe "Extra user fields" do
     within "form.new_user" do
       find("*[type=submit]").click
     end
-
     expect(page).to have_content("message with a confirmation link has been sent")
   end
 
@@ -118,7 +123,6 @@ describe "Extra user fields" do
       within "form.new_user" do
         find("*[type=submit]").click
       end
-
       expect(page).to have_content("message with a confirmation link has been sent")
     end
   end
@@ -133,7 +137,6 @@ describe "Extra user fields" do
       within "form.new_user" do
         find("*[type=submit]").click
       end
-
       expect(page).to have_no_content("message with a confirmation link has been sent")
       within("label[for='registration_user_phone_number']") do
         expect(page).to have_content("There is an error in this field.")
@@ -172,7 +175,6 @@ describe "Extra user fields" do
       within "form.new_user" do
         find("*[type=submit]").click
       end
-
       expect(page).to have_content("message with a confirmation link has been sent")
     end
   end

@@ -23,7 +23,7 @@ fr:
       actions:
         export: Exporter
       exports:
-        export_as: Exporter au format %{export_format}
+        export_as: Exporter %{name} au format %{export_format}
       extra_user_fields:
         menu:
           title: Gérer les champs d'inscription personnalisés

@@ -31,7 +31,7 @@ describe "Admin manages officializations" do
   context "when clicking on export csv button" do
     before do
       find("span.exports").click
-      click_on "Export CSV"
+      click_on "Export Participants as CSV"
     end
 
     it "redirects to officialization index page and display a flash message" do

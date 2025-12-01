@@ -89,7 +89,7 @@ module Decidim
       end
 
       def phone_number_format?
-        return unless phone_number?
+        return false unless phone_number?
 
         current_organization.extra_user_field_configuration(:phone_number)["pattern"].present?
       end

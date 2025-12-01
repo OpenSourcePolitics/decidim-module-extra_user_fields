@@ -1,20 +1,20 @@
-.hidden {
-  display: none;
-}
 .datepicker__help-text-container {
   position: relative;
   width: 100%;
   height: 1rem;
 }
-#registration_user_date_of_birth_date {
-  margin-top: 0;
+#user_date_of_birth_date {
+  margin-top: -1rem;
 }
-#registration_user_date_of_birth_datepicker_row button.datepicker__calendar-button {
-  top: 0;
+button.datepicker__calendar-button {
+  top: -0.5rem;
 }
 .datepicker__help-date {
   position: relative;
   display: inline-block;
   width: 50%;
   margin-top: 0 !important;
+}
+label[for="user_date_of_birth"] {
+  margin-bottom: -2rem;
 }

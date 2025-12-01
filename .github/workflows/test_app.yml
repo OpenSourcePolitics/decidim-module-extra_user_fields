@@ -3,7 +3,7 @@ on:
     inputs:
       ruby_version:
         description: 'Ruby Version'
-        default: "3.1.1"
+        default: "3.2.2"
         required: false
         type: string
       test_command:
@@ -13,7 +13,7 @@ on:
       chrome_version:
         description: 'Chrome & Chromedriver version'
         required: false
-        default: "126.0.6478.182"
+        default: "136.0.7103.92"
         type: string
 
 jobs:

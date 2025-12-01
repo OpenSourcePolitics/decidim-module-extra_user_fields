@@ -9,7 +9,10 @@ FactoryBot.modify do
       create_static_pages { true }
     end
 
-    name { Faker::Company.unique.name }
+    # we do not want machine translation here
+    name do
+      Decidim.available_locales.index_with { |_locale| Faker::Company.unique.name }
+    end
     reference_prefix { Faker::Name.suffix }
     time_zone { "UTC" }
     twitter_handler { Faker::Hipster.word }
@@ -34,7 +37,7 @@ FactoryBot.modify do
     admin_terms_of_service_body { Decidim::Faker::Localized.wrapped("<p>", "</p>") { generate_localized_title } }
     force_users_to_authenticate_before_access_organization { false }
     machine_translation_display_priority { "original" }
-    external_domain_whitelist { ["example.org", "twitter.com", "facebook.com", "youtube.com", "github.com", "mytesturl.me"] }
+    external_domain_allowlist { ["example.org", "twitter.com", "facebook.com", "youtube.com", "github.com", "mytesturl.me"] }
     smtp_settings do
       {
         "from" => "test@example.org",

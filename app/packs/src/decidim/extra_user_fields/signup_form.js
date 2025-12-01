@@ -3,6 +3,7 @@ $(document).ready(function() {
     const statutoryRepresentativeEmailField = $('#statutory_representative_email_field');
     const dateOfBirthField = $('#registration_user_date_of_birth');
     const underageFieldSet = $('#underage_fieldset');
+    const buttonCalendar = $('button.datepicker__pick-calendar');
     let underageLimit = 18;
 
     // Function to show or hide underage related fields based on age
@@ -59,8 +60,15 @@ $(document).ready(function() {
     }
 
     if (dateOfBirthField.length && underageFieldSet.length) {
-        dateOfBirthField.on('change', function() {
-            updateUnderageFields();
-        });
+        $(document).on('keyup', dateOfBirthField, function() {
+            setTimeout(() => {
+                updateUnderageFields();
+            }, 500)
+        })
+        $(document).on('click', buttonCalendar, function() {
+            setTimeout(() => {
+                updateUnderageFields();
+            }, 500)
+        })
     }
 });
