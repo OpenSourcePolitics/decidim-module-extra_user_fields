@@ -1,6 +1,12 @@
-inherit_from: https://raw.githubusercontent.com/decidim/decidim/release/0.28-stable/.rubocop.yml
+plugins:
+  - rubocop-factory_bot
+
+inherit_from:
+  - .rubocop_ruby.yml
+  - .rubocop_rails.yml
 
 AllCops:
+  TargetRubyVersion: 3.3
   Include:
     - "**/*.rb"
     - "**/*.rake"
@@ -8,13 +14,12 @@ AllCops:
     - "**/Gemfile"
     - "**/Rakefile"
   Exclude:
-    - "development_app/**/*"
-    - "spec/decidim_dummy_app/**/*"
-    - "bin/**/*"
     - "node_modules/**/*"
     - "db/schema.rb"
     - "vendor/**/*"
+    - "spec/decidim_dummy_app/**/*"
+    - "development_app/**/*"
 
-RSpec/FilePath:
+RSpec/DescribeClass:
   Exclude:
-    - "spec/serializers/user_export_serializer_spec.rb"
+    - spec/system/*

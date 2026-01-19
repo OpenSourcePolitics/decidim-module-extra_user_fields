@@ -1,7 +1,7 @@
 <%= cell("decidim/announcement", t(".callout.help")) %>
 
 <div class="form__wrapper">
-  <div class="card" data-component="accordion" id="accordion-global">
+  <div class="card" data-controller="accordion" id="accordion-global">
     <div class="card-divider">
       <button class="card-divider-button" data-open="true" data-controls="panel-global" type="button">
         <%= icon "arrow-right-s-line" %>
@@ -11,12 +11,19 @@
 
     <div id="panel-global" class="card-section">
       <div class="row column">
-        <%= form.check_box :enabled, label: t(".extra_user_fields.extra_user_fields_enabled"), data: { toggle: "accordion-setup" } %>
+        <div class="field">
+          <%= form.check_box :enabled,
+                             onchange: "document.getElementById('accordion-setup').hidden = !this.checked",
+                             label: t(".extra_user_fields.extra_user_fields_enabled")%>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card" data-component="accordion" id="accordion-setup" <%= "hidden" unless form.object.enabled %>>
+  <div class="card"
+       data-controller="accordion"
+       id="accordion-setup"
+       <%= "hidden" unless form.object.enabled %>>
     <div class="card-divider">
       <button class="card-divider-button" data-open="true" data-controls="panel-setup" type="button">
         <%= icon "arrow-right-s-line" %>

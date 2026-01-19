@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email = ["fernando@populate.tools"]
   s.license = "AGPL-3.0"
   s.homepage = "https://github.com/PopulateTools/decidim-module-extra_user_fields"
-  s.required_ruby_version = ">= 3.2.2"
+  s.required_ruby_version = ">= 3.3.4"
 
   s.name = "decidim-extra_user_fields"
   s.summary = "Decidim module to add extra fields to users."
