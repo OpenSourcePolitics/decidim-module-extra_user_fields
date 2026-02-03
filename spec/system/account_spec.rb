@@ -173,9 +173,8 @@ describe "Account" do
             all("*[type=submit]").last.click
           end
 
-          within("label[for='user_phone_number']") do
-            expect(page).to have_content("There is an error in this field.", visible: :all)
-          end
+          expect(page).to have_no_content("Your account was successfully updated.")
+          expect(page).to have_css("input#user_phone_number.is-invalid-input")
         end
       end
     end
