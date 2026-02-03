@@ -1,7 +1,13 @@
-<span class="exports button button__sm button__secondary button--simple" data-toggle="export-dropdown">
-  <%= t "actions.export", scope: "decidim.admin" %>
-  <%= icon "arrow-down-s-line", class: "dropdown-filter-icon" %>
-</span>
-<div class="dropdown-pane has-position-bottom has-alignment-right" id="export-dropdown" data-dropdown data-position=bottom data-alignment=right data-auto-focus="true" data-close-on-click="true">
-  <%= extra_user_fields_export_users_dropdown %>
+<div class="exports inline-dropdown" style="position: relative; display: inline-block;">
+  <button type="button"
+          class="button button__sm button__secondary"
+          onclick="this.nextElementSibling.toggleAttribute('hidden')"
+          aria-haspopup="true">
+    <%= t "actions.export", scope: "decidim.admin" %>
+    <%= icon "arrow-down-s-line", class: "inline-icon" %>
+  </button>
+
+  <div style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); min-width: 200px; z-index: 100;" hidden>
+    <%= extra_user_fields_export_users_dropdown %>
+  </div>
 </div>

@@ -32,6 +32,8 @@ module Decidim
             statutory_representative_email:
           }
         end
+        let(:tos_agreement) { true }
+        let(:nickname) { "facebook_user" }
 
         let(:form_params) do
           {
@@ -41,9 +43,10 @@ module Decidim
               "email" => email,
               "email_verified" => true,
               "name" => "Facebook User",
-              "nickname" => "facebook_user",
+              "nickname" => nickname,
               "oauth_signature" => oauth_signature,
               "avatar_url" => "http://www.example.com/foo.jpg",
+              "tos_agreement" => tos_agreement,
               "country" => country,
               "postal_code" => postal_code,
               "date_of_birth" => date_of_birth,
@@ -86,7 +89,7 @@ module Decidim
             expect { command.call }.to broadcast(:invalid)
           end
 
-          it "doesn't create a user" do
+          it "does not create a user" do
             expect do
               command.call
             end.not_to change(User, :count)
@@ -112,6 +115,48 @@ module Decidim
             expect(user.newsletter_notifications_at).to be_nil
             expect(user).to be_confirmed
             expect(user.valid_password?("decidim123456789")).to be(true)
+          end
+
+          it "download and attach the avatar" do
+            stub_request(:get, "http://www.example.com/foo.jpg").to_return(
+              status: 200,
+              body: File.read("spec/assets/avatar.jpg"), headers: { "Content-Type" => "image/jpeg" }
+            )
+            expect { command.call }.to broadcast(:ok)
+            user = User.find_by(email: form.email)
+            expect(user.avatar).to be_attached
+            expect(user.avatar.attachment.filename.to_s).to eq("foo.jpg")
+            expect(user.avatar.attachment.blob.byte_size).to eq(File.open("spec/assets/avatar.jpg").size)
+          end
+
+          context "when avatar URL fetching fails" do
+            it "with a 404 HTTP code, it saves the user without avatar" do
+              stub_request(:get, "http://www.example.com/foo.jpg").to_return(status: 404)
+              expect { command.call }.to broadcast(:ok)
+              user = User.find_by(email: form.email)
+              expect(user.avatar).not_to be_attached
+            end
+
+            it "with a 502 HTTP code, it saves the user without avatar" do
+              stub_request(:get, "http://www.example.com/foo.jpg").to_return(status: 502)
+              expect { command.call }.to broadcast(:ok)
+              user = User.find_by(email: form.email)
+              expect(user.avatar).not_to be_attached
+            end
+
+            it "with a 500 HTTP code, it saves the user without avatar" do
+              stub_request(:get, "http://www.example.com/foo.jpg").to_return(status: 500)
+              expect { command.call }.to broadcast(:ok)
+              user = User.find_by(email: form.email)
+              expect(user.avatar).not_to be_attached
+            end
+
+            it "with a 401 HTTP code, it saves the user without avatar" do
+              stub_request(:get, "http://www.example.com/foo.jpg").to_return(status: 401)
+              expect { command.call }.to broadcast(:ok)
+              user = User.find_by(email: form.email)
+              expect(user.avatar).not_to be_attached
+            end
           end
 
           # NOTE: This is important so that the users who are only
@@ -141,7 +186,10 @@ module Decidim
                 name: "Facebook User",
                 nickname: "facebook_user",
                 avatar_url: "http://www.example.com/foo.jpg",
-                raw_data: {}
+                raw_data: {},
+                tos_agreement: true,
+                accepted_tos_version: user.accepted_tos_version,
+                newsletter_notifications_at: user.newsletter_notifications_at
               )
             command.call
           end
@@ -168,14 +216,14 @@ module Decidim
             context "with an unverified email" do
               let(:verified_email) { nil }
 
-              it "doesn't link a previously existing user" do
+              it "does not link a previously existing user" do
                 user = create(:user, email:, organization:)
                 expect { command.call }.to broadcast(:error)
 
                 expect(user.identities.length).to eq(0)
               end
 
-              it "doesn't confirm a previously existing user" do
+              it "does not confirm a previously existing user" do
                 create(:user, email:, organization:)
                 expect { command.call }.to broadcast(:error)
 
@@ -203,33 +251,60 @@ module Decidim
           end
         end
 
-        context "when a user exists with that identity" do
-          before do
-            user = create(:user, email:, organization:)
-            create(:identity, user:, provider:, uid:)
+        context "when the nickname has capital letters" do
+          let(:nickname) { "Facebook_user" }
+
+          it "downcases the nickname" do
+            command.call
+
+            user = User.where(email:).last
+            expect(user.nickname).to eq("facebook_user")
           end
+        end
+
+        context "when a user exists with that identity" do
+          let!(:user) { create(:user, email:, organization:) }
+          let!(:identity) { create(:identity, user:, provider:, uid:) }
 
           it "broadcasts ok" do
             expect { command.call }.to broadcast(:ok)
+          end
+
+          it "notifies about login with oauth data" do
+            allow(command).to receive(:create_identity).and_return(identity)
+            expect(ActiveSupport::Notifications)
+              .to receive(:publish)
+              .with("decidim.user.omniauth_login",
+                    user_id: user.id,
+                    identity_id: identity.id,
+                    provider:,
+                    uid:,
+                    email:,
+                    name: "Facebook User",
+                    nickname: "facebook_user",
+                    avatar_url: "http://www.example.com/foo.jpg",
+                    raw_data: {},
+                    tos_agreement: true,
+                    accepted_tos_version: user.accepted_tos_version,
+                    newsletter_notifications_at: user.newsletter_notifications_at)
+            command.call
           end
 
           context "with the same email as reported by the identity" do
             it "confirms the user" do
               command.call
 
-              user = User.find_by(email:)
-              expect(user).to be_confirmed
+              expect(user.reload).to be_confirmed
             end
           end
 
           context "with another email than in the one reported by the identity" do
-            let(:verified_email) { "other@email.com" }
+            let(:verified_email) { "other@example.com" }
 
-            it "doesn't confirm the user" do
+            it "does not confirm the user" do
               command.call
 
-              user = User.find_by(email:)
-              expect(user).not_to be_confirmed
+              expect(user.reload).not_to be_confirmed
             end
           end
 

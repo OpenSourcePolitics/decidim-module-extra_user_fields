@@ -105,7 +105,16 @@ module Decidim
       end
 
       context "and a user_group has the email" do
-        let!(:user_group) { create(:user_group, organization:, email:) }
+        let!(:user_group) do
+          create(:user,
+                 organization:,
+                 email:,
+                 name: "Group Name",
+                 nickname: "group_user",
+                 password: "S4CGQ9AM4ttJdPKS",
+                 password_confirmation: "S4CGQ9AM4ttJdPKS",
+                 extended_data: { "group" => true })
+        end
 
         it { is_expected.not_to be_valid }
       end
@@ -154,7 +163,7 @@ module Decidim
 
       context "when the nickname already exists" do
         context "and a user has the nickname" do
-          let!(:another_user) { create(:user, organization:, nickname: name.upcase) }
+          let!(:another_user) { create(:user, organization:, nickname: name) }
 
           it { is_expected.to be_valid }
 
@@ -170,7 +179,16 @@ module Decidim
         end
 
         context "and a user_group has the nickname" do
-          let!(:user_group) { create(:user_group, organization:, nickname: name) }
+          let!(:user_group) do
+            create(:user,
+                   organization:,
+                   nickname: name,
+                   email: "group_justme@example.org",
+                   name: "Group Justme",
+                   password: "S4CGQ9AM4ttJdPKS",
+                   password_confirmation: "S4CGQ9AM4ttJdPKS",
+                   extended_data: { "group" => true })
+          end
 
           it { is_expected.to be_valid }
         end
