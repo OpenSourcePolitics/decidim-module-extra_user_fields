@@ -91,7 +91,9 @@ module Decidim
       def phone_number_format?
         return false unless phone_number?
 
-        current_organization.extra_user_field_configuration(:phone_number)["pattern"].present?
+        pattern = current_organization.extra_user_field_configuration(:phone_number)["pattern"]
+
+        pattern.present?
       end
 
       def location?
@@ -120,14 +122,14 @@ module Decidim
 
         age = calculate_age(date_of_birth)
 
-        validate_age(age)
+        validate_age?(age)
       end
 
       def calculate_age(date_of_birth)
         Time.zone.today.year - date_of_birth.year - (Time.zone.today.yday < date_of_birth.yday ? 1 : 0)
       end
 
-      def validate_age(age)
+      def validate_age?(age)
         errors.add(:date_of_birth, :underage) unless underage_within_limit?(age)
         underage_within_limit?(age)
       end

@@ -3,7 +3,7 @@
 require "spec_helper"
 require "i18n/tasks"
 
-describe "I18n sanity" do
+describe I18n do
   let(:locales) do
     ENV["ENFORCED_LOCALES"].presence || Decidim.available_locales.map(&:to_s).join(",")
   end

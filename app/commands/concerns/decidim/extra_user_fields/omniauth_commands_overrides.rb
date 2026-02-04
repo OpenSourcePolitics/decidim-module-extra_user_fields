@@ -14,11 +14,12 @@ module Decidim
         verify_oauth_signature!
 
         begin
-          if existing_identity
-            user = existing_identity.user
-            verify_user_confirmed(user)
+          if (@identity = existing_identity)
+            @user = existing_identity.user
+            verify_user_confirmed(@user)
 
-            return broadcast(:ok, user)
+            trigger_omniauth_event("decidim.user.omniauth_login")
+            return broadcast(:ok, @user)
           end
           return broadcast(:invalid) if form.invalid?
 
@@ -27,7 +28,7 @@ module Decidim
             send_email_to_statutory_representative
             @identity = create_identity
           end
-          trigger_omniauth_registration
+          trigger_omniauth_event
 
           broadcast(:ok, @user)
         rescue ActiveRecord::RecordInvalid => e
@@ -57,18 +58,34 @@ module Decidim
           @user.newsletter_notifications_at = nil
           @user.password = generated_password
           @user.password_confirmation = generated_password
-          if form.avatar_url.present?
-            url = URI.parse(form.avatar_url)
-            filename = File.basename(url.path)
-            file = url.open
-            @user.avatar.attach(io: file, filename:)
-          end
+
+          # Attach avatar with error handling
+          attach_avatar_if_present
+
+          @user.tos_agreement = form.tos_agreement
+          @user.accepted_tos_version = Time.current
+          raise NeedTosAcceptance if @user.tos_agreement.blank?
+
           @user.skip_confirmation! if verified_email
         end
 
-        @user.tos_agreement = "1"
         @user.extended_data = extended_data
         @user.save!
+      end
+
+      def attach_avatar_if_present
+        return if form.avatar_url.blank?
+
+        begin
+          url = URI.parse(form.avatar_url)
+          filename = File.basename(url.path)
+          file = url.open
+          @user.avatar.attach(io: file, filename:)
+        rescue OpenURI::HTTPError, SocketError, Timeout::Error => e
+          # Silently fail avatar attachment if URL is unreachable
+          # Log the error but continue with user creation
+          Rails.logger.warn("Failed to attach avatar from #{form.avatar_url}: #{e.message}")
+        end
       end
 
       def extended_data

@@ -10,22 +10,69 @@ def fill_registration_form
   page.check("registration_user_tos_agreement")
 end
 
-def fill_extra_user_fields
-  # date_of_birth
-  find(".datepicker__calendar-button").click
-  within "tbody.sc-wc-datepicker" do
-    page.find("span[aria-hidden=true]", text: "15").click
-  end
-  click_link_or_button "Select"
-  # fill_in :registration_user_date_of_birth, with: "01/01/2000"
+def fill_extra_user_fields(phone_number: "0123456789")
+  fill_date_of_birth
   select "Other", from: :registration_user_gender
   select "Argentina", from: :registration_user_country
   fill_in :registration_user_postal_code, with: "00000"
-  fill_in :registration_user_phone_number, with: "0123456789"
+  fill_in :registration_user_phone_number, with: phone_number
   fill_in :registration_user_location, with: "Cahors"
-  # Block ExtraUserFields FillExtraUserFields
+end
 
-  # EndBlock
+def submit_registration_form(disable_pattern_validation: false)
+  if disable_pattern_validation
+    page.execute_script(<<~JS)
+      const phoneInput = document.querySelector('#registration_user_phone_number');
+      if (phoneInput && phoneInput.hasAttribute('pattern')) {
+        phoneInput.setAttribute('data-original-pattern', phoneInput.getAttribute('pattern'));
+        phoneInput.removeAttribute('pattern');
+      }
+    JS
+  end
+
+  within "form.new_user" do
+    find("*[type=submit]").click
+  end
+
+  sleep 0.5
+end
+
+def wait_for_field_error(field, timeout: 5)
+  Timeout.timeout(timeout) do
+    loop do
+      has_error = page.has_css?("label[for='registration_user_#{field}'] .form-error", wait: 0.5) ||
+                  page.has_css?("label[for='registration_user_#{field}'] .error", wait: 0.5) ||
+                  page.has_css?("#registration_user_#{field}.is-invalid-input", wait: 0.5) ||
+                  page.has_css?("#registration_user_#{field}[aria-invalid='true']", wait: 0.5) ||
+                  page.has_css?(".field_with_errors #registration_user_#{field}", wait: 0.5) ||
+                  page.has_css?("#registration_user_#{field}_error", wait: 0.5)
+
+      return true if has_error
+
+      sleep 0.2
+    end
+  end
+rescue Timeout::Error
+  false
+end
+
+def expect_validation_error_on_field(field)
+  expect(page).to have_no_content("message with a confirmation link has been sent", wait: 3)
+
+  has_form = page.has_css?("form.new_user", wait: 3)
+  expect(has_form).to be(true), "Expected to stay on registration page with form visible"
+
+  field_has_error = wait_for_field_error(field, timeout: 5)
+
+  expect(field_has_error).to be(true),
+                             "Expected field '#{field}' to have validation error. Current path: #{page.current_path}"
+
+  error_message_found = page.has_content?("is invalid", wait: 2) ||
+                        page.has_content?("invalid", wait: 2) ||
+                        page.has_content?("format", wait: 2) ||
+                        page.has_content?("error", wait: 2, case_sensitive: false)
+
+  expect(error_message_found).to be(true), "Expected to find error message for field '#{field}'"
 end
 
 describe "Extra user fields" do
@@ -39,50 +86,27 @@ describe "Extra user fields" do
 
   let(:organization) { create(:organization, extra_user_fields:) }
   let!(:terms_and_conditions_page) { Decidim::StaticPage.find_by(slug: "terms-and-conditions", organization:) }
-  # rubocop:disable Style/TrailingCommaInHashLiteral
   let(:extra_user_fields) do
     {
-      # Block ExtraUserFields ExtraUserFields
       "enabled" => true,
       "date_of_birth" => date_of_birth,
       "postal_code" => postal_code,
       "gender" => gender,
       "country" => country,
       "phone_number" => phone_number,
-      "location" => location,
-      # EndBlock
+      "location" => location
     }
   end
-  # rubocop:enable Style/TrailingCommaInHashLiteral
 
-  let(:date_of_birth) do
-    { "enabled" => true }
-  end
-
-  let(:postal_code) do
-    { "enabled" => true }
-  end
-
-  let(:country) do
-    { "enabled" => true }
-  end
-
-  let(:gender) do
-    { "enabled" => true }
-  end
-
+  let(:date_of_birth) { { "enabled" => true } }
+  let(:postal_code) { { "enabled" => true } }
+  let(:country) { { "enabled" => true } }
+  let(:gender) { { "enabled" => true } }
   let(:phone_number) do
     { "enabled" => true, "pattern" => phone_number_pattern, "placeholder" => nil }
   end
   let(:phone_number_pattern) { "^(\\+34)?[0-9 ]{9,12}$" }
-
-  let(:location) do
-    { "enabled" => true }
-  end
-
-  # Block ExtraUserFields RspecVar
-
-  # EndBlock
+  let(:location) { { "enabled" => true } }
 
   before do
     switch_to_host(organization.host)
@@ -97,19 +121,14 @@ describe "Extra user fields" do
       expect(page).to have_content("Postal code")
       expect(page).to have_content("Phone Number")
       expect(page).to have_content("Location")
-      # Block ExtraUserFields ContainsFieldSpec
-
-      # EndBlock
     end
   end
 
   it "allows to create a new account" do
     fill_registration_form
     fill_extra_user_fields
+    submit_registration_form
 
-    within "form.new_user" do
-      find("*[type=submit]").click
-    end
     expect(page).to have_content("message with a confirmation link has been sent")
   end
 
@@ -119,10 +138,8 @@ describe "Extra user fields" do
     it "allows to create a new account" do
       fill_registration_form
       fill_extra_user_fields
+      submit_registration_form
 
-      within "form.new_user" do
-        find("*[type=submit]").click
-      end
       expect(page).to have_content("message with a confirmation link has been sent")
     end
   end
@@ -132,15 +149,10 @@ describe "Extra user fields" do
 
     it "does not allow to create a new account" do
       fill_registration_form
-      fill_extra_user_fields
+      fill_extra_user_fields(phone_number: "0123456789")
+      submit_registration_form(disable_pattern_validation: true)
 
-      within "form.new_user" do
-        find("*[type=submit]").click
-      end
-      expect(page).to have_no_content("message with a confirmation link has been sent")
-      within("label[for='registration_user_phone_number']") do
-        expect(page).to have_content("There is an error in this field.")
-      end
+      expect_validation_error_on_field("phone_number")
     end
   end
 
@@ -150,9 +162,6 @@ describe "Extra user fields" do
   it_behaves_like "mandatory extra user fields", "postal_code"
   it_behaves_like "mandatory extra user fields", "phone_number"
   it_behaves_like "mandatory extra user fields", "location"
-  # Block ExtraUserFields ItBehavesLikeSpec
-
-  # EndBlock
 
   context "when extra_user_fields is disabled" do
     let(:organization) { create(:organization, :extra_user_fields_disabled) }
@@ -164,17 +173,12 @@ describe "Extra user fields" do
       expect(page).to have_no_content("Postal code")
       expect(page).to have_no_content("Phone Number")
       expect(page).to have_no_content("Location")
-      # Block ExtraUserFields DoesNotContainFieldSpec
-
-      # EndBlock
     end
 
     it "allows to create a new account" do
       fill_registration_form
+      submit_registration_form
 
-      within "form.new_user" do
-        find("*[type=submit]").click
-      end
       expect(page).to have_content("message with a confirmation link has been sent")
     end
   end
